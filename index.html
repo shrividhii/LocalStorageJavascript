@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="body1">
+    <h2 style="color: aliceblue;">User Registration<span class="btn"><button id="button" onclick="newform()">Add
+                New</button></span></h2>
+    <hr style="border: 1.5px solid #E5B5A2;">
+    <br>
+    <br>
+    <br>
+    <table class="table" id="myTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Operations</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</body>
+<script>
+    function loadTableData() {
+        var tableBody = document.getElementById("tbody");
+        tableBody.innerHTML = "";
+
+        var data = JSON.parse(localStorage.getItem("formData")) || [];
+
+        data.forEach(function (entry, index) {
+            var row = document.createElement("tr");
+            row.innerHTML = "<td id='name_" + index + "' contenteditable='false'>" + entry.name + "</td>" +
+                "<td id='address_" + index + "' contenteditable='false'>" + entry.address + "</td>" +
+                "<td id='email_" + index + "' contenteditable='false'>" + entry.email + "</td>" +
+                "<td id='contact_" + index + "' contenteditable='false'>" + entry.contact + "</td>" +
+                "<td><button onclick='editData(" + index + ")'>Modify</button> <button onclick='saveData(" + index + ")'>Save</button> <button onclick='deleteData(" + index + ")'>Delete</button></td>";
+            tableBody.appendChild(row);
+        });
+    }
+
+    function newform() {
+        window.location.href = "RegistrationForm.html";
+    }
+
+    function editData(index) {
+
+        var cells = document.querySelectorAll("#myTable tbody tr:nth-child(" + (index + 1) + ") td:not(:last-child)");
+        cells.forEach(function (cell) {
+            cell.contentEditable = !cell.isContentEditable;
+        });
+    }
+
+    function saveData(index) {
+
+        var data = JSON.parse(localStorage.getItem("formData")) || [];
+
+
+        data[index].name = document.getElementById("name_" + index).innerText;
+        data[index].address = document.getElementById("address_" + index).innerText;
+        data[index].email = document.getElementById("email_" + index).innerText;
+        data[index].contact = document.getElementById("contact_" + index).innerText;
+
+
+        localStorage.setItem("formData", JSON.stringify(data));
+        loadTableData();
+    }
+
+    function deleteData(index) {
+
+        var data = JSON.parse(localStorage.getItem("formData")) || [];
+        data.splice(index, 1);
+        localStorage.setItem("formData", JSON.stringify(data));
+        loadTableData();
+    }
+
+    loadTableData();
+</script>
+
+</html>
