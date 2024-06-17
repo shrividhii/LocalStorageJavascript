@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="style.css">
+
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="body1">
+    <h2 style="text-align: center;">Product List<span class="btn"><button id="button" onclick="openInsertModal()">Insert
+                Product</button></span></h2>
+    <br>
+    <div id="productList"></div>
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Edit Product</h2>
+            <form id="editForm" onsubmit="return false;">
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" required><br><br>
+                <label for="editPrice">Price:</label>
+                <input type="number" step="0.01" id="editPrice" required><br><br>
+                <label for="editCategory">Category:</label>
+                <input type="text" id="editCategory" required><br><br>
+                <label for="editDescription">Description:</label><br>
+                <textarea id="editDescription" rows="4" required></textarea><br><br>
+                <label for="editProductId">Product ID:</label>
+                <input type="text" id="editProductId" readonly>
+                <br><br>
+                <button onclick="updateProduct()">Save</button>
+            </form>
+        </div>
+    </div>
+    <div id="insertModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInsertModal()">&times;</span>
+            <h2>Add New Product</h2>
+            <form id="insertForm">
+                <label for="insertTitle">Title:</label><br>
+                <input type="text" id="insertTitle" required><br><br>
+                <label for="insertPrice">Price:</label><br>
+                <input type="number" step="0.01" id="insertPrice" required><br><br>
+                <label for="insertCategory">Category:</label><br>
+                <input type="text" id="insertCategory" required><br><br>
+                <label for="insertDescription">Description:</label><br>
+                <textarea id="insertDescription" required></textarea><br><br>
+                <label for="insertImage">Image:</label><br>
+                <input type="file" id="insertImage" accept="image/*" required><br><br>
+                <button type="button" onclick="insertProduct()">Add Product</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        /* function getProducts() {
+             fetch('https://fakestoreapi.com/products')
+                 .then(res => res.json())
+                 .then(products => {
+                     displayProducts(products);
+                 })
+                 .catch(error => console.error('Error fetching products:', error));
+         }
+ 
+         function displayProducts(products) {
+             const productListDiv = document.getElementById('productList');
+             productListDiv.innerHTML = ''; // Clear previous content
+ 
+             // Create table element
+             const table = document.createElement('table');
+             table.classList.add('product-table');
+ 
+             // Create table header
+             const headerRow = document.createElement('tr');
+             headerRow.innerHTML = `
+                 <th>ID</th>
+                 <th>Title</th>
+                 <th>Price</th>
+                 <th>Category</th>
+                 <th>Description</th>
+                 <th>Image</th>
+                 <th>Actions</th>
+             `;
+             table.appendChild(headerRow);
+ 
+             products.slice(0, 20).forEach(product => {
+     const row = document.createElement('tr');
+     row.setAttribute('data-id', product.id); // Add data-id attribute with product ID
+     row.innerHTML = `
+         <td>${product.id}</td>
+         <td>${product.title}</td>
+         <td>$${product.price}</td>
+         <td>${product.category}</td>
+         <td>${product.description}</td>
+         <td><img src="${product.image}" alt="${product.title}" style="max-width: 100px; max-height: 100px;"></td>
+         <td>
+             <button onclick="deleteProduct(${product.id})">Delete</button>
+             <button onclick="editProduct(${product.id})">Edit</button>
+         </td>
+     `;
+     table.appendChild(row);
+ });
+ 
+             // Append table to product list container
+             productListDiv.appendChild(table);
+         }
+ 
+         function deleteProduct(productId) {
+     fetch(`https://fakestoreapi.com/products/${productId}`, {
+         method: "DELETE"
+     })
+         .then(res => {
+             if (res.ok) {
+                 return res.json();
+             }
+             throw new Error('Failed to delete the product');
+         })
+         .then(response => {
+             console.log(response); // Log the response from the API
+             // If deletion is successful, remove the product from the UI
+             removeProductFromUI(productId);
+         })
+         .catch(error => {
+             console.error('Error deleting product:', error.message);
+             alert('Failed to delete the product');
+         });
+ }
+ 
+ function removeProductFromUI(productId) {
+     const rowToRemove = document.querySelector(`tr[data-id="${productId}"]`);
+     if (rowToRemove) {
+         rowToRemove.remove();
+     } else {
+         console.warn(`Product with ID ${productId} not found in UI.`);
+     }
+ }
+ 
+         getProducts();*/
+
+        function getProducts() {
+            fetch('https://fakestoreapi.com/products')
+                .then(res => res.json())
+                .then(products => {
+                    displayProducts(products);
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        }
+
+        /*function displayProducts(products) {
+            const productListDiv = document.getElementById('productList');
+            productListDiv.innerHTML = ''; 
+
+         
+            const table = document.createElement('table');
+            table.classList.add('product-table');
+
+    
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `
+                <th>ID</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Actions</th>
+            `;
+            table.appendChild(headerRow);
+
+         
+            products.slice(0, 20).forEach(product => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-id', product.id);
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.title}</td>
+                    <td>$${product.price}</td>
+                    <td>${product.category}</td>
+                    <td>${product.description}</td>
+                    <td><img src="${product.image}" alt="${product.title}" style="max-width: 100px; max-height: 100px;"></td>
+                    <td>
+                        <button onclick="deleteProduct(${product.id})">Delete</button>
+                        <button onclick="editProduct(${product.id})">Edit</button>
+                        <button onclick="showDetails(${product.id})">Details</button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+
+            productListDiv.appendChild(table);
+        }*/
+        /*   function displayProducts() {
+               const productListDiv = document.getElementById('productList');
+               productListDiv.innerHTML = '';
+   
+               fetch('https://fakestoreapi.com/products?limit=20')
+                   .then(res => res.json())
+                   .then(products => {
+                       let tableHTML = `
+                   <table class="product-table">
+                       <thead>
+                           <tr>
+                               <th>ID</th>
+                               <th>Title</th>
+                               <th>Price</th>
+                               <th>Category</th>
+                               <th>Description</th>
+                               <th>Image</th>
+                               <th>Actions</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+               `;
+   
+                       products.forEach(product => {
+                           tableHTML += `
+                       <tr data-id="${product.id}">
+                           <td>${product.id}</td>
+                           <td>${product.title}</td>
+                           <td>${product.price}</td>
+                           <td>${product.category}</td>
+                           <td>${product.description}</td>
+                           <td><img src="${product.image}" alt="${product.title}" style="max-width: 100px; max-height: 100px;"></td>
+                           <td>
+                               <button onclick="deleteProduct(${product.id})">Delete</button>
+                               <button onclick="editProduct(${product.id})">Edit</button>
+                               <button onclick="showDetails(${product.id})">Details</button>
+                           </td>
+                       </tr>
+                   `;
+                       });
+   
+                       tableHTML += `
+                       </tbody>
+                   </table>
+               `;
+   
+                       productListDiv.innerHTML = tableHTML;
+                   });
+           }
+   
+           displayProducts();*/
+        function displayProducts() {
+            const productListDiv = document.getElementById('productList');
+            productListDiv.innerHTML = '';
+
+            fetch('https://fakestoreapi.com/products?limit=20')
+                .then(res => res.json())
+                .then(products => {
+                    let tableHTML = `
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                    products.forEach(product => {
+                        const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+                        if (!deletedProducts.includes(product.id)) {
+                            tableHTML += `
+                        <tr data-id="${product.id}">
+                            <td>${product.id}</td>
+                            <td>${product.title}</td>
+                            <td>${product.price}</td>
+                            <td>${product.category}</td>
+                            <td>${product.description}</td>
+                            <td><img src="${product.image}" alt="${product.title}" style="max-width: 100px; max-height: 100px;"></td>
+                            <td>
+                                <button onclick="deleteProduct(${product.id})">Delete</button>
+                                <button onclick="editProduct(${product.id})">Edit</button>
+                                <button onclick="showDetails(${product.id})">Details</button>
+                            </td>
+                        </tr>
+                    `;
+                        }
+                    });
+
+                    tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+                    productListDiv.innerHTML = tableHTML;
+                });
+        }
+        function deleteProduct(productId) {
+            fetch(`https://fakestoreapi.com/products/${productId}`, {
+                method: "DELETE"
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    throw new Error('Failed to delete the product');
+                })
+                .then(response => {
+                    console.log(response);
+
+                    const deletedRow = document.querySelector(`tr[data-id="${productId}"]`);
+                    if (deletedRow) {
+                        deletedRow.style.display = 'none';
+
+                        const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+                        deletedProducts.push(productId);
+                        localStorage.setItem('deletedProducts', JSON.stringify(deletedProducts));
+                    }
+
+                    displayProducts();
+                })
+                .catch(error => {
+                    console.error('Error deleting product:', error.message);
+                    alert('Failed to delete the product');
+                });
+        }
+
+        displayProducts();
+
+        /*function deleteProduct(productId) {
+            fetch(`https://fakestoreapi.com/products/${productId}`, {
+                method: "DELETE"
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    throw new Error('Failed to delete the product');
+                })
+                .then(response => {
+                    console.log(response);
+
+                })
+                .catch(error => {
+                    console.error('Error deleting product:', error.message);
+                    alert('Failed to delete the product');
+                });
+        }*/
+        function deleteProduct(productId) {
+            fetch(`https://fakestoreapi.com/products/${productId}`, {
+                method: "DELETE"
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    throw new Error('Failed to delete the product');
+                })
+                .then(response => {
+                    console.log(response);
+
+                    const deletedRow = document.querySelector(`tr[data-id="${productId}"]`);
+                    if (deletedRow) {
+                        deletedRow.style.display = 'none';
+
+                        const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+                        deletedProducts.push(productId);
+                        localStorage.setItem('deletedProducts', JSON.stringify(deletedProducts));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting product:', error.message);
+                    alert('Failed to delete the product');
+                });
+        }
+        function hideRows() {
+            const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+            deletedProducts.forEach(productId => {
+                const deletedRow = document.querySelector(`tr[data-id="${productId}"]`);
+                if (deletedRow) {
+                    deletedRow.style.display = 'none';
+                }
+            });
+        }
+
+
+        window.addEventListener('load', hideRows);
+
+        function editProduct(productId) {
+             
+            fetch(`https://fakestoreapi.com/products/${productId}`)
+                .then(res => res.json())
+                .then(product => {
+
+                    document.getElementById('editProductId').value = product.id;
+                    
+                    showEditModal(product);
+                    
+                })
+                .catch(error => console.error('Error fetching product details:', error));
+        }
+
+        function showEditModal(product) {
+
+            document.getElementById('editTitle').value = product.title;
+            document.getElementById('editPrice').value = product.price;
+            document.getElementById('editCategory').value = product.category;
+            document.getElementById('editDescription').value = product.description;
+
+            document.getElementById('editModal').style.display = 'block';
+           
+        }
+
+        function closeModal() {
+
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        /*function updateProduct() {
+
+            const productId = document.getElementById('editProductId').value;
+            const updatedData = {
+                title: document.getElementById('editTitle').value,
+                price: parseFloat(document.getElementById('editPrice').value),
+                category: document.getElementById('editCategory').value,
+                description: document.getElementById('editDescription').value
+            };
+
+            fetch(`https://fakestoreapi.com/products/${productId}`, {
+                method: "PUT",
+                body: JSON.stringify(updatedData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    throw new Error('Failed to update the product');
+                })
+                .then(response => {
+                    console.log('Product updated successfully:', response);
+
+                    closeModal();
+
+                    getProducts();
+                })
+                .catch(error => {
+                    console.error('Error updating product:', error.message);
+                    alert('Failed to update the product');
+                });
+        }*/
+        function updateProduct() {
+    const productId = document.getElementById('editProductId').value;
+    const updatedData = {
+        title: document.getElementById('editTitle').value,
+        price: parseFloat(document.getElementById('editPrice').value),
+        category: document.getElementById('editCategory').value,
+        description: document.getElementById('editDescription').value
+    };
+
+    fetch(`https://fakestoreapi.com/products/${productId}`, {
+        method: "PUT",
+        body: JSON.stringify(updatedData),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        throw new Error('Failed to update the product');
+    })
+    .then(response => {
+        console.log('Product updated successfully:', response);
+      
+        updateProductOnUI(response);
+        
+        updateProductInLocalStorage(response);
+     
+        closeModal();
+
+    })
+    .catch(error => {
+        console.error('Error updating product:', error.message);
+        alert('Failed to update the product');
+    });
+}
+
+
+function updateProductOnUI(updatedProduct) {
+    const productId = updatedProduct.id;
+    const productRow = document.querySelector(`tr[data-id="${productId}"]`);
+    if (productRow) {
+   
+        productRow.innerHTML = `
+            <td>${updatedProduct.id}</td>
+            <td>${updatedProduct.title}</td>
+            <td>$${updatedProduct.price}</td>
+            <td>${updatedProduct.category}</td>
+            <td>${updatedProduct.description}</td>
+            <td><img src="${updatedProduct.image}" alt="${updatedProduct.title}" style="max-width: 100px; max-height: 100px;"></td>
+            <td>
+                <button onclick="deleteProduct(${updatedProduct.id})">Delete</button>
+                <button onclick="editProduct(${updatedProduct.id})">Edit</button>
+                <button onclick="showDetails(${updatedProduct.id})">Details</button>
+            </td>
+        `;
+    }
+
+
+    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+    const updatedProducts = storedProducts.map(product => {
+        if (product.id === updatedProduct.id) {
+            return updatedProduct;
+        }
+        return product;
+    });
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+}
+
+function addProductToLocalStorage(newProduct) {
+    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+    storedProducts.push(newProduct);
+    localStorage.setItem('products', JSON.stringify(storedProducts));
+}
+
+function removeProductFromLocalStorage(productId) {
+    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+    const updatedProducts = storedProducts.filter(product => product.id !== productId);
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+}
+
+function displayStoredProducts() {
+    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+    displayProducts(storedProducts);
+}
+
+
+window.addEventListener('load', displayStoredProducts);
+
+
+
+
+function updateProductInLocalStorage(productId, updatedData) {
+
+    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+
+    const index = storedProducts.findIndex(product => product.id === productId);
+
+
+    if (index !== -1) {
+        storedProducts[index] = { id: productId, ...updatedData };
+        localStorage.setItem('products', JSON.stringify(storedProducts));
+    }
+}
+
+
+        function openInsertModal() {
+            document.getElementById('insertModal').style.display = 'block';
+        }
+
+        function closeInsertModal() {
+            document.getElementById('insertModal').style.display = 'none';
+        }
+
+        /* function insertProduct() {
+             fetch('https://fakestoreapi.com/products')
+                 .then(res => res.json())
+                 .then(products => {
+                     const lastProductId = 20;
+ 
+                     const newProductId = lastProductId + 1;
+ 
+                     const newProductData = {
+                         id: newProductId,
+                         title: document.getElementById('insertTitle').value,
+                         price: parseFloat(document.getElementById('insertPrice').value),
+                         category: document.getElementById('insertCategory').value,
+                         description: document.getElementById('insertDescription').value,
+                         image: 'https://i.pravatar.cc'
+                     };
+ 
+                     fetch('https://fakestoreapi.com/products', {
+                         method: "POST",
+                         body: JSON.stringify(newProductData),
+                         headers: {
+                             'Content-Type': 'application/json'
+                         }
+                     })
+                         .then(res => {
+                             if (res.ok) {
+                                 return res.json();
+                             }
+                             throw new Error('Failed to add new product');
+                         })
+                         .then(response => {
+                             console.log('New product added successfully:', response);
+                             closeInsertModal();
+                             getProducts();
+                         })
+                         .catch(error => {
+                             console.error('Error adding new product:', error.message);
+                             alert('Failed to add new product');
+                         });
+                 })
+                 .catch(error => console.error('Error fetching products for ID generation:', error));
+         }*/
+
+         function insertProduct() {
+    const newProductData = {
+        title: document.getElementById('insertTitle').value,
+        price: parseFloat(document.getElementById('insertPrice').value),
+        category: document.getElementById('insertCategory').value,
+        description: document.getElementById('insertDescription').value
+    };
+
+    const imageFile = document.getElementById('insertImage').files[0];
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        reader.onload = function () {
+            newProductData.image = reader.result;
+            addProductToServer(newProductData);
+        };
+        reader.onerror = function (error) {
+            console.error('Error reading the file:', error);
+        };
+    } else {
+        alert('Please select an image.');
+    }
+}
+
+function addProductToServer(newProductData) {
+    fetch('https://fakestoreapi.com/products', {
+        method: "POST",
+        body: JSON.stringify(newProductData),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        throw new Error('Failed to add new product');
+    })
+    .then(newProduct => {
+        console.log('New product added successfully:', newProduct);
+        closeInsertModal();
+     
+        displayNewProduct(newProduct);
+     
+        updateLocalStorage(newProduct);
+    })
+    .catch(error => {
+        console.error('Error adding new product:', error.message);
+        alert('Failed to add new product');
+    });
+}
+
+function displayNewProduct(newProduct) {
+    const productListDiv = document.getElementById('productList');
+    const tableBody = productListDiv.querySelector('tbody');
+
+    const newRow = document.createElement('tr');
+    newRow.setAttribute('data-id', newProduct.id);
+    newRow.innerHTML = `
+        <td>${newProduct.id}</td>
+        <td>${newProduct.title}</td>
+        <td>${newProduct.price}</td>
+        <td>${newProduct.category}</td>
+        <td>${newProduct.description}</td>
+        <td><img src="${newProduct.image}" alt="${newProduct.title}" style="max-width: 100px; max-height: 100px;"></td>
+        <td>
+            <button onclick="deleteProduct(${newProduct.id})">Delete</button>
+            <button onclick="editProduct(${newProduct.id})">Edit</button>
+            <button onclick="showDetails(${newProduct.id})">Details</button>
+        </td>
+    `;
+
+    tableBody.appendChild(newRow);
+}
+
+function updateLocalStorage(newProduct) {
+    const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+    storedProducts.push(newProduct);
+    localStorage.setItem('products', JSON.stringify(storedProducts));
+}
+
+        
+        function showDetails(productId) {
+
+            fetch(`https://fakestoreapi.com/products/${productId}`)
+                .then(res => res.json())
+                .then(product => {
+
+                    console.log(JSON.stringify(product, null, 2));
+                })
+                .catch(error => {
+                    console.error('Error fetching product details:', error);
+                });
+        }
+      
+
+
+        getProducts();
+    </script>
+</body>
+
+</html>

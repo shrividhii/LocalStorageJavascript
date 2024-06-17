@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Modal styles (same as before) */
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body class="body1">
+    <h2 style="text-align: center;">Product List</h2>
+    <div id="productList"></div>
+
+    <!-- Edit Product Modal (same as before) -->
+
+    <!-- Insert Product Modal -->
+    <div id="insertModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInsertModal()">&times;</span>
+            <h2>Add New Product</h2>
+            <form id="insertForm">
+                <label for="insertTitle">Title:</label><br>
+                <input type="text" id="insertTitle" required><br><br>
+                <label for="insertPrice">Price:</label><br>
+                <input type="number" id="insertPrice" required><br><br>
+                <label for="insertCategory">Category:</label><br>
+                <input type="text" id="insertCategory" required><br><br>
+                <label for="insertDescription">Description:</label><br>
+                <textarea id="insertDescription" required></textarea><br><br>
+                <button type="button" onclick="insertProduct()">Add Product</button>
+            </form>
+        </div>
+    </div>
+
+    <button onclick="openInsertModal()">Insert Product</button>
+
+    <script>
+        // Function to open the insert modal
+        function openInsertModal() {
+            document.getElementById('insertModal').style.display = 'block';
+        }
+
+        // Function to close the insert modal
+        function closeInsertModal() {
+            document.getElementById('insertModal').style.display = 'none';
+        }
+
+        function insertProduct() {
+            const newProductData = {
+                title: document.getElementById('insertTitle').value,
+                price: parseFloat(document.getElementById('insertPrice').value),
+                category: document.getElementById('insertCategory').value,
+                description: document.getElementById('insertDescription').value,
+                image: 'https://i.pravatar.cc' // You can change the default image URL if needed
+            };
+
+            // Make sure to include appropriate validation for the input fields
+
+            // Send a POST request to insert the new product
+            fetch('https://fakestoreapi.com/products', {
+                method: "POST",
+                body: JSON.stringify(newProductData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    throw new Error('Failed to add new product');
+                })
+                .then(response => {
+                    console.log('New product added successfully:', response);
+                    // Close the insert modal
+                    closeInsertModal();
+                    // Refresh the product list
+                    getProducts();
+                })
+                .catch(error => {
+                    console.error('Error adding new product:', error.message);
+                    alert('Failed to add new product');
+                });
+        }
+
+        // Rest of the code (getProducts, displayProducts, deleteProduct, editProduct) remains the same as before
+    </script>
+</body>
+</html>
